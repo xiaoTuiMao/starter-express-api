@@ -1,7 +1,14 @@
 const nodemailer = require('nodemailer');
-const path = require('path');
-const fs = require('fs-extra');
 
+const transporter = nodemailer.createTransport({
+  host: 'smtp.163.com', // SMTP 服务器
+  port: 465, // SMTP 端口
+  secure: true, // 如果是 465 端口使用 true，其他端口使用 false
+  auth: {
+      user: process.env.EMAIL_USER, // 你的邮箱账号
+      pass: process.env.EMAIL_PASS // 邮箱密码或授权码
+  }
+});
 
 // 设置邮件内容
 const mailOptions = {
@@ -15,35 +22,13 @@ const mailOptions = {
 const sendEmail = (req, res, next) => {
   const { user, pass } = req.query;
   console.log(req.query);
-  const jsonPath = path.join(__dirname, './user.json');
-  if (user && pass) {
-    console.log('=====');
-    fs.writeJSONSync(jsonPath, { user, pass });
-  }
-
-  try{
-    const userInfo = fs.readJSONSync(jsonPath);
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.163.com', // SMTP 服务器
-      port: 465, // SMTP 端口
-      secure: true, // 如果是 465 端口使用 true，其他端口使用 false
-      auth: {
-          user: userInfo.user, // 你的邮箱账号
-          pass: userInfo.pass // 你的邮箱密码
-      }
-    });
-    // 发送邮件
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        res.send(error.toString());
-        return;
-      }
-      res.send('send email ok');
-    });
-    transporter.close();
-  } catch (err){
-    res.send(err.toString());
-  }
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      res.send(error.toString());
+      return;
+    }
+    res.send('send email ok');
+  });
 }
 
 const setup = (app) => {
