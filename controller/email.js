@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const rss = require('../services/rss');
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.163.com', // SMTP 服务器
@@ -19,10 +20,19 @@ const mailOptions = {
   html: '<b>Hello world?</b>' // HTML正文
 };
 
+
+ const disposalData = async (req, res, next) => {
+  req.rssInfo = await rss.getRSSInfo();
+  next();
+ }
+
 const sendEmail = (req, res, next) => {
-  const { user, pass } = req.query;
-  console.log(req.query);
-  transporter.sendMail(mailOptions, (error, info) => {
+  transporter.sendMail({
+    from: 'pengbingapple@163.com', // 发送者
+    to: '460976963@qq.com', // 接收者
+    subject: '每日简讯', // 主题
+    text: JSON.stringify(req.rssInfo), // 纯文本正文
+  }, (error, info) => {
     if (error) {
       res.send(error.toString());
       return;
@@ -32,7 +42,7 @@ const sendEmail = (req, res, next) => {
 }
 
 const setup = (app) => {
-  app.get('/email', sendEmail);
+  app.get('/rss-1', disposalData, sendEmail);
 }
 
 module.exports = {
