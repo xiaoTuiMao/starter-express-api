@@ -12,16 +12,6 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// 设置邮件内容
-const mailOptions = {
-  from: 'pengbingapple@163.com', // 发送者
-  to: '460976963@qq.com', // 接收者
-  subject: 'Hello from Node', // 主题
-  text: 'Hello world?', // 纯文本正文
-  html: '<b>Hello world?</b>' // HTML正文
-};
-
-
  const disposalData = async (req, res, next) => {
   const rssInfo = await rss.getRSSInfo();
   const template = `
@@ -58,9 +48,9 @@ const mailOptions = {
 const sendEmail = (req, res, next) => {
   transporter.sendMail({
     from: 'pengbingapple@163.com', // 发送者
-    to: '460976963@qq.com', // 接收者
+    to: 'pengrongshu@gmail.com', // 接收者
     subject: '每日简讯', // 主题
-    html: JSON.stringify(req.html), // 纯文本正文
+    html: req.html, // 纯文本正文
   }, (error, info) => {
     if (error) {
       res.send(error.toString());
