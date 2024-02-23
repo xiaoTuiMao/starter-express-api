@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const ejs = require('ejs');
 const rss = require('../services/rss');
 
 const transporter = nodemailer.createTransport({
@@ -22,8 +23,36 @@ const mailOptions = {
 
 
  const disposalData = async (req, res, next) => {
-  req.rssInfo = await rss.getRSSInfo();
-  next();
+  const rssInfo = await rss.getRSSInfo();
+  const template = `
+  <style>
+  * {
+    margin: 0;
+    padding: 0;
+  }
+  </style>
+  <div style="display: flex;">
+    <% rssInfo.forEach((item) => { %>
+      <div style="width: <%= 100 / rssInfo.length %>%; padding: 10px; box-sizing: border-box">
+        <h2 style="margin-bottom: 10px"><%= item.source %></h2>
+        <% item.contents.forEach((content) => { %>
+          <div style="
+          padding: 10px;
+          border-bottom: 1px solid #ccc;
+          margin-bottom: 10px;
+          cursor: pointer;
+      ">
+            <a target='_blank' href="<%= content.link %>"><%= content.title %></a>
+            <p style="margin-top: 10px">发布时间<%= content.pubDate %></p>
+          </div>
+        <%});%>
+      </div>
+    <%});%>
+  </div>
+  `
+  req.html = ejs.render(template, { rssInfo });
+  res.send(req.html);
+  // next();
  }
 
 const sendEmail = (req, res, next) => {
@@ -31,7 +60,7 @@ const sendEmail = (req, res, next) => {
     from: 'pengbingapple@163.com', // 发送者
     to: '460976963@qq.com', // 接收者
     subject: '每日简讯', // 主题
-    text: JSON.stringify(req.rssInfo), // 纯文本正文
+    html: JSON.stringify(req.html), // 纯文本正文
   }, (error, info) => {
     if (error) {
       res.send(error.toString());
