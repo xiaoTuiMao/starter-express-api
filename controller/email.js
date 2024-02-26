@@ -41,8 +41,8 @@ const transporter = nodemailer.createTransport({
   </div>
   `
   req.html = ejs.render(template, { rssInfo });
-  res.send(req.html);
-  // next();
+  // res.send(req.html);
+  next();
  }
 
 const sendEmail =(req, res, next) => {
