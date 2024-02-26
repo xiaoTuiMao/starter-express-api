@@ -12,8 +12,8 @@ const transporter = nodemailer.createTransport({
   }
 });
 
- const disposalData = async (req, res, next) => {
-  const rssInfo = await rss.getRSSInfo();
+ const disposalData =  (index) => async (req, res, next) => {
+  const rssInfo = await rss.getRSSInfo(index);
   const template = `
   <style>
   * {
@@ -41,14 +41,14 @@ const transporter = nodemailer.createTransport({
   </div>
   `
   req.html = ejs.render(template, { rssInfo });
-  // res.send(req.html);
-  next();
+  res.send(req.html);
+  // next();
  }
 
-const sendEmail = (req, res, next) => {
+const sendEmail =(req, res, next) => {
   transporter.sendMail({
-    from: 'pengbingapple@163.com', // 发送者
-    to: 'pengrongshu@gmail.com', // 接收者
+    from: process.env.EMAIL_USER, // 发送者
+    to: process.env.SEND_EMAIL_USERS, // 接收者
     subject: '每日简讯', // 主题
     html: req.html, // 纯文本正文
   }, (error, info) => {
@@ -61,7 +61,8 @@ const sendEmail = (req, res, next) => {
 }
 
 const setup = (app) => {
-  app.get('/rss-1', disposalData, sendEmail);
+  app.get('/rss-1', disposalData(1), sendEmail);
+  app.get('/rss-2', disposalData(2), sendEmail);
 }
 
 module.exports = {

@@ -14,7 +14,12 @@ const RSS_TASKS = [
   {
     link: 'https://www.zhangxinxu.com/wordpress/feed/',
     name: '张鑫旭',
-  }
+  },
+
+  {
+    link: 'https://hughfenghen.github.io/rss.xml',
+    name: '风痕 · 術&思',
+  },
 ]
 
 const createRSSTask = async(task) => {
@@ -23,7 +28,9 @@ const createRSSTask = async(task) => {
     return {
       source: task.name,
 
-      contents: rssData.items.slice(0, 5).map(item => ({
+      contents: rssData.items.sort((a, b) => {
+        return new Date(b.pubDate) - new Date(a.pubDate);
+      }).slice(0, 5).map(item => ({
         link: item.link,
         title: item.title,
         pubDate: item.pubDate,
@@ -41,8 +48,8 @@ const createRSSTask = async(task) => {
 /**
  * 获取 rss 信息
  */
-const getRSSInfo = async () => {
-  const rssInfo = await Promise.all(RSS_TASKS.map(task => createRSSTask(task)));
+const getRSSInfo = async (index = 1) => {
+  const rssInfo = await Promise.all(RSS_TASKS.slice((index - 1) * 3, index * 3).map(task => createRSSTask(task)));
   return rssInfo;
 }
 
