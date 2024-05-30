@@ -63,6 +63,7 @@ const sendEmail =(req, res, next) => {
 const setup = (app) => {
   app.get('/rss-1', disposalData(1), sendEmail);
   app.get('/rss-2', disposalData(2), sendEmail);
+  app.get('/rss-3', disposalData(3), sendEmail);
 }
 
 module.exports = {

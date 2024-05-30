@@ -20,6 +20,18 @@ const RSS_TASKS = [
     link: 'https://hughfenghen.github.io/rss.xml',
     name: '风痕 · 術&思',
   },
+  {
+    link: 'https://changelog.com/jsparty/feed',
+    name: 'changelog-jsParty',
+  },
+  {
+    link: 'https://cprss.s3.amazonaws.com/react.statuscode.com.xml',
+    name: 'react',
+  },
+  {
+    link: 'https://cprss.s3.amazonaws.com/frontendfoc.us.xml',
+    name: 'html',
+  },
 ]
 
 const createRSSTask = async(task) => {
